@@ -1,7 +1,7 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <tree-sitter/lib/include/tree_sitter/api.h>
+#include <tree_sitter/api.h>
 #include <utility>
 #include <string> 
 

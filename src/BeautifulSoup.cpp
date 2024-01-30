@@ -1,14 +1,18 @@
 #include "../include/BeautifulSoup.hpp"
-#include <tree-sitter/lib/include/tree_sitter/api.h>
+#include <tree_sitter/api.h>
 #include <utility>
 #include <iostream>
+#include <algorithm>
 
-BeautifulSoup::BeautifulSoup(const std::string& URL) : tree(this->parser.parse(performCURLGetRequest(URL))){
+BeautifulSoup::BeautifulSoup(const std::string &html_doc)
+: tree(this->parser.parse(html_doc.data()))
+{
 }
 
-BeautifulSoup::~BeautifulSoup() {
-    curl_easy_cleanup(curl);
-    curl = NULL;
+BeautifulSoup::~BeautifulSoup()
+{
+    // curl_easy_cleanup(curl);
+    // curl = NULL;
 }
 
 size_t BeautifulSoup::writeFunction(void *ptr, size_t size, size_t nmemb, std::string* data) {
@@ -17,27 +21,27 @@ size_t BeautifulSoup::writeFunction(void *ptr, size_t size, size_t nmemb, std::s
 }
 
 std::string BeautifulSoup::performCURLGetRequest(const std::string& URL) {
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
-        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/7.42.0");
-        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
-        curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
+    // curl = curl_easy_init();
+    // if (curl) {
+    //     curl_easy_setopt(curl, CURLOPT_URL, URL.c_str());
+    //     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+    //     curl_easy_setopt(curl, CURLOPT_USERAGENT, "curl/7.42.0");
+    //     curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 50L);
+    //     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
         
-        std::string response_string;
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFunction);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
+         std::string response_string;
+    //     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeFunction);
+    //     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_string);
 
-        curl_easy_perform(curl);
+    //     curl_easy_perform(curl);
 
-        // Clean the html
-        std::replace(response_string.begin(), response_string.end(), '\n',' '); 
+    //     // Clean the html
+    //     std::replace(response_string.begin(), response_string.end(), '\n',' '); 
 
-        return response_string;
-    } else {
-        throw "cURL could not start!";
-    }
+         return response_string;
+    // } else {
+    //     throw "cURL could not start!";
+    // }
 }
 
 std::map<std::string,std::string> BeautifulSoup::createAttribsMap(const std::string& source, const std::vector<Node>& attribs) noexcept {
@@ -172,22 +176,38 @@ std::vector<TagNode> BeautifulSoup::find_all(const Node& node, const std::string
     return filterByTagNameUsingAttribs(node, tag_name, emptyMap, false);
 }
 
-TagNode BeautifulSoup::find(const std::string& tag_name, std::map<std::string,std::string> attrs) {
-    return filterByTagNameUsingAttribs(tree.root_node, tag_name, attrs, true)[0];
-}
-
-TagNode BeautifulSoup::find(const std::string& tag_name) {
+TagNode BeautifulSoup::find(const std::string& tag_name, 
+            std::map<std::string,std::string> attrs, bool& foundIt) {
     std::map<std::string,std::string> emptyMap;
-    return filterByTagNameUsingAttribs(tree.root_node, tag_name, emptyMap, true)[0];
+    std::vector<TagNode> results = filterByTagNameUsingAttribs(tree.root_node, tag_name, attrs, true);
+    foundIt = !results.empty();
+    return results.empty() ? TagNode(tree.root_node, emptyMap) : results.front();
 }
 
-TagNode BeautifulSoup::find(const Node& n, const std::string& tag_name, std::map<std::string,std::string> attrs) {
-    return filterByTagNameUsingAttribs(n, tag_name, attrs, true)[0];
-}
-
-TagNode BeautifulSoup::find(const Node& n, const std::string& tag_name) {
+TagNode BeautifulSoup::find(const std::string& tag_name, bool& foundIt) {
     std::map<std::string,std::string> emptyMap;
-    return filterByTagNameUsingAttribs(n, tag_name, emptyMap, true)[0];
+    std::vector<TagNode> results = filterByTagNameUsingAttribs(tree.root_node, tag_name, emptyMap, true);
+    foundIt = !results.empty();
+    return results.empty() ? TagNode(tree.root_node, emptyMap) : results.front();
+}
+
+TagNode BeautifulSoup::find(const Node& n, 
+            const std::string& tag_name, 
+            std::map<std::string,std::string> attrs, 
+            bool& foundIt)
+{
+    std::map<std::string,std::string> emptyMap;
+    std::vector<TagNode> results = filterByTagNameUsingAttribs(n, tag_name, attrs, true);
+    foundIt = !results.empty();
+    return results.empty() ? TagNode(tree.root_node, emptyMap) : results.front();
+}
+
+TagNode BeautifulSoup::find(const Node& n, const std::string& tag_name, 
+            bool& foundIt) {
+    std::map<std::string,std::string> emptyMap;
+    std::vector<TagNode> results = filterByTagNameUsingAttribs(n, tag_name, emptyMap, true);
+    foundIt = !results.empty();
+    return results.empty() ? TagNode(tree.root_node, emptyMap) : results.front();
 }
 
 std::string BeautifulSoup::getNodeText(const Node &n) {

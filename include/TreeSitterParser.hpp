@@ -3,7 +3,7 @@
 
 #include "Tree.hpp"
 
-#include <tree-sitter/lib/include/tree_sitter/api.h>
+#include <tree_sitter/api.h>
 #include <string>
 
 class TreeSitterParser {

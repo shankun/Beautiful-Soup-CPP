@@ -1,7 +1,7 @@
 #ifndef QUERY_HPP 
 #define QUERY_HPP
 
-#include <tree-sitter/lib/include/tree_sitter/api.h>
+#include <tree_sitter/api.h>
 #include <string>
 
 extern "C" {

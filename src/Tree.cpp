@@ -1,5 +1,5 @@
 #include "../include/Tree.hpp"
-#include <tree-sitter/lib/include/tree_sitter/api.h>
+#include <tree_sitter/api.h>
 
 std::vector<Node> Tree::execQuery(const std::string& queryString, const Node& n) const {
     Query q(queryString);

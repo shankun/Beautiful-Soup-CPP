@@ -20,7 +20,7 @@ class BeautifulSoup {
         Tree tree;
 
         // For performing GET requests
-        CURL* curl;
+//        CURL* curl;
 
         // Functions for performing GET requests
         static size_t writeFunction(void*, size_t, size_t, std::string*);
@@ -58,9 +58,9 @@ class BeautifulSoup {
     public:
         /**
          * @brief Construct a new Beautiful Soup object
-         * @param URL URL of HTML document  
+         * @param html_doc string of HTML document  
          */
-        BeautifulSoup(const std::string&);
+        BeautifulSoup(const std::string& html_doc);
 
         /**
          * @brief Destroy the Beautiful Soup object
@@ -82,12 +82,12 @@ class BeautifulSoup {
          * @brief Find first occurence of given tag using the given map as a filter 
          * @param tagName The name of the tag  
          * @param attrs The attributes to search for in the given tag name
-         * @return TagNode 
+         * @return TagNode. if not found, return root node.
          */
-        TagNode find(const std::string&, std::map<std::string,std::string>);
-        TagNode find(const std::string&);
-        TagNode find(const Node&, const std::string&, std::map<std::string,std::string>);
-        TagNode find(const Node&, const std::string&);
+        TagNode find(const std::string&, std::map<std::string,std::string>, bool& foundIt);
+        TagNode find(const std::string&, bool& foundIt);
+        TagNode find(const Node&, const std::string&, std::map<std::string,std::string>, bool& foundIt);
+        TagNode find(const Node&, const std::string&, bool& foundIt);
 
         std::string getNodeText(const Node& n);
         std::string getNodeData(const Node& n);

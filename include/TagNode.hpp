@@ -5,7 +5,7 @@
 
 #include <exception>
 #include <map>
-#include <Logging/Logger.hpp>
+//#include <Logging/Logger.hpp>
 
 // TagNode => A specialised node for representing html tags
 class TagNode : public Node {
